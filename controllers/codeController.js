@@ -8,13 +8,11 @@ export const runCode = async (req, res, next) => {
     if (!code || !language) {
       return res.status(400).json({
         success: false,
-        message: 'Code and language are required',
+        message: "Code and language are required",
       });
     }
 
     const result = await executeCode(code, language, input);
-
-    console.log("Code execution result:", result);
 
     return res.status(200).json({
       success: true,
@@ -33,7 +31,7 @@ export const submitCode = async (req, res, next) => {
     if (!code || !language || !problemId) {
       return res.status(400).json({
         success: false,
-        message: 'Code, language, and problemId are required',
+        message: "Code, language, and problemId are required",
       });
     }
 
@@ -42,7 +40,7 @@ export const submitCode = async (req, res, next) => {
     if (!problem) {
       return res.status(404).json({
         success: false,
-        message: 'Problem not found',
+        message: "Problem not found",
       });
     }
 

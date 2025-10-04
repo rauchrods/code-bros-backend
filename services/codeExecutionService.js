@@ -47,8 +47,6 @@ const executeJavaScript = async (code, input, startTime) => {
     .substring(7)}.js`;
   const filePath = path.join(TEMP_DIR, fileName);
 
-  console.log("File path:", filePath);
-
   try {
     console.log("Writing file...");
     await fs.writeFile(filePath, code);
@@ -142,7 +140,7 @@ const executeJava = async (code, input, startTime) => {
     }
 
     const { stdout, stderr } = await execPromise(
-      `cd ${TEMP_DIR} && java ${className}`,
+      `cd "${TEMP_DIR}" && java "${className}"`,
       {
         timeout: TIMEOUT,
         maxBuffer: 1024 * 1024,
@@ -183,7 +181,7 @@ const executeCpp = async (code, input, startTime) => {
     await fs.writeFile(filePath, code);
 
     const { stderr: compileError } = await execPromise(
-      `g++ ${filePath} -o ${outputPath}`,
+      `g++ "${filePath}" -o "${outputPath}"`,
       { timeout: TIMEOUT }
     );
 

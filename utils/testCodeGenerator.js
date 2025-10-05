@@ -13,45 +13,26 @@ export const generateTestCode = (userCode, example, problem, language) => {
   }
 };
 
-const parseInput = (input) => {
-  const params = {};
-  const parts = input.split(",").map((p) => p.trim());
-
-  parts.forEach((part) => {
-    const equalIndex = part.indexOf("=");
-    if (equalIndex === -1) return;
-
-    const key = part.substring(0, equalIndex).trim();
-    const value = part.substring(equalIndex + 1).trim();
-
-    try {
-      params[key] = JSON.parse(value);
-    } catch {
-      params[key] = value.replace(/['"]/g, "");
-    }
-  });
-
-  return params;
-};
-
 const generateJavaScriptTest = (userCode, example, problem) => {
-  const params = parseInput(example.input);
-  const expectedOutput = example.output;
-  const functionName = problem.id.replace(/-([a-z])/g, (_, letter) =>
-    letter.toUpperCase()
-  );
-  const args = Object.values(params)
+  const functionName = problem.functionName;
+  const args = Object.values(example.input)
     .map((v) => JSON.stringify(v))
     .join(", ");
+  const expected = JSON.stringify(example.output);
+
+  console.log("args:", args);
+  console.log("expected:", expected);
 
   return `
 ${userCode}
 
 try {
   const result = ${functionName}(${args});
-  const expected = ${expectedOutput};
+  const expected = ${expected};
   const resultStr = JSON.stringify(result);
   const expectedStr = JSON.stringify(expected);
+
+  console.log(resultStr);
   
   if (resultStr === expectedStr) {
     console.log('PASS');
@@ -65,12 +46,11 @@ try {
 };
 
 const generatePythonTest = (userCode, example, problem) => {
-  const params = parseInput(example.input);
-  const expectedOutput = example.output;
   const functionName = problem.id.replace(/-/g, "_");
-  const args = Object.values(params)
+  const args = Object.values(example.input)
     .map((v) => JSON.stringify(v))
     .join(", ");
+  const expected = JSON.stringify(example.output);
 
   return `
 import json
@@ -79,7 +59,7 @@ ${userCode}
 
 try:
     result = ${functionName}(${args})
-    expected = ${expectedOutput}
+    expected = ${expected}
     
     result_str = json.dumps(result, sort_keys=True)
     expected_str = json.dumps(expected, sort_keys=True)
@@ -94,27 +74,66 @@ except Exception as e:
 };
 
 const generateJavaTest = (userCode, example, problem) => {
-  const params = parseInput(example.input);
-  const functionName = problem.id.replace(/-([a-z])/g, (_, letter) =>
-    letter.toUpperCase()
-  );
-  const paramValues = Object.values(params);
-  const firstParam = paramValues[0];
-  const secondParam = paramValues[1];
+  const functionName = problem.functionName;
+  const inputValues = Object.values(example.input);
+  const expectedOutput = example.output;
 
-  let testCall = "";
-  let arrayDeclaration = "";
+  let declarations = "";
+  let testCode = "";
+  let params = [];
 
-  if (Array.isArray(firstParam)) {
-    arrayDeclaration = `int[] nums = {${firstParam.join(",")}};`;
+  // Generate parameter declarations and build parameter list
+  inputValues.forEach((value, index) => {
+    const paramName = `param${index + 1}`;
+    params.push(paramName);
 
-    if (problem.id === "two-sum") {
-      const expected = JSON.parse(example.output);
-      testCall = `
-        int target = ${secondParam};
-        int[] result = solution.${functionName}(nums, target);
-        int[] expected = {${expected.join(",")}};
+    if (Array.isArray(value)) {
+      declarations += `        int[] ${paramName} = {${value.join(",")}};\n`;
+    } else if (typeof value === "string") {
+      declarations += `        String ${paramName} = "${value}";\n`;
+    } else if (typeof value === "number") {
+      declarations += `        int ${paramName} = ${value};\n`;
+    }
+  });
+
+  // Generate test code based on return type
+  const paramList = params.join(", ");
+
+  if (Array.isArray(expectedOutput)) {
+    // Array return type
+    testCode = `
+        int[] result = solution.${functionName}(${paramList});
+        int[] expected = {${expectedOutput.join(",")}};
         boolean passed = java.util.Arrays.equals(result, expected);
+    `;
+  } else if (typeof expectedOutput === "boolean") {
+    // Boolean return type
+    testCode = `
+        boolean result = solution.${functionName}(${paramList});
+        boolean expected = ${expectedOutput};
+        boolean passed = (result == expected);
+    `;
+  } else if (typeof expectedOutput === "string") {
+    // String return type
+    testCode = `
+        String result = solution.${functionName}(${paramList});
+        String expected = "${expectedOutput}";
+        boolean passed = result.equals(expected);
+    `;
+  } else if (typeof expectedOutput === "number") {
+    if (Number.isInteger(expectedOutput)) {
+      // Integer return type
+      testCode = `
+        int result = solution.${functionName}(${paramList});
+        int expected = ${expectedOutput};
+        boolean passed = (result == expected);
+      `;
+    } else {
+      // Double return type
+      testCode = `
+        double result = solution.${functionName}(${paramList});
+        double expected = ${expectedOutput};
+        boolean passed = Math.abs(result - expected) < 0.00001;
       `;
     }
   }
@@ -130,8 +149,8 @@ public class Main {
     public static void main(String[] args) {
         Solution solution = new Solution();
         try {
-            ${arrayDeclaration}
-            ${testCall}
+${declarations}
+${testCode}
             
             if (passed) {
                 System.out.println("PASS");
@@ -147,39 +166,83 @@ public class Main {
 };
 
 const generateCppTest = (userCode, example, problem) => {
-  const params = parseInput(example.input);
-  const paramValues = Object.values(params);
-  const firstParam = paramValues[0];
-  const secondParam = paramValues[1];
+  const functionName = problem.functionName;
+  const inputValues = Object.values(example.input);
+  const expectedOutput = example.output;
 
-  let testCall = "";
+  let declarations = "";
+  let params = [];
 
-  if (Array.isArray(firstParam)) {
-    const expected = JSON.parse(example.output);
-    const functionName = problem.id.replace(/-([a-z])/g, (_, letter) =>
-      letter.toUpperCase()
-    );
+  // Generate parameter declarations
+  inputValues.forEach((value, index) => {
+    const paramName = `param${index + 1}`;
+    params.push(paramName);
 
-    testCall = `
-    vector<int> nums = {${firstParam.join(",")}};
-    int target = ${secondParam};
-    vector<int> result = ${functionName}(nums, target);
-    vector<int> expected = {${expected.join(",")}};
+    if (Array.isArray(value)) {
+      declarations += `    vector<int> ${paramName} = {${value.join(",")}};\n`;
+    } else if (typeof value === "string") {
+      declarations += `    string ${paramName} = "${value}";\n`;
+    } else if (typeof value === "number") {
+      declarations += `    int ${paramName} = ${value};\n`;
+    }
+  });
+
+  const paramList = params.join(", ");
+  let testCode = "";
+
+  // Generate test code based on return type
+  if (Array.isArray(expectedOutput)) {
+    // Array return type
+    testCode = `
+    vector<int> result = ${functionName}(${paramList});
+    vector<int> expected = {${expectedOutput.join(",")}};
     bool passed = (result == expected);
     `;
+  } else if (typeof expectedOutput === "boolean") {
+    // Boolean return type
+    testCode = `
+    bool result = ${functionName}(${paramList});
+    bool expected = ${expectedOutput};
+    bool passed = (result == expected);
+    `;
+  } else if (typeof expectedOutput === "string") {
+    // String return type
+    testCode = `
+    string result = ${functionName}(${paramList});
+    string expected = "${expectedOutput}";
+    bool passed = (result == expected);
+    `;
+  } else if (typeof expectedOutput === "number") {
+    if (Number.isInteger(expectedOutput)) {
+      // Integer return type
+      testCode = `
+    int result = ${functionName}(${paramList});
+    int expected = ${expectedOutput};
+    bool passed = (result == expected);
+      `;
+    } else {
+      // Double return type
+      testCode = `
+    double result = ${functionName}(${paramList});
+    double expected = ${expectedOutput};
+    bool passed = abs(result - expected) < 0.00001;
+      `;
+    }
   }
 
   return `
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cmath>
 using namespace std;
 
 ${userCode}
 
 int main() {
     try {
-        ${testCall}
+${declarations}
+${testCode}
         
         if (passed) {
             cout << "PASS" << endl;

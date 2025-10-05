@@ -3,7 +3,9 @@ import { PROBLEMS } from "../constants/problems.js";
 export const getAllProblems = (req, res) => {
   try {
     // Remove starter code from response for security
-    const problems = PROBLEMS.map(({ starterCode, ...problem }) => problem);
+    const problems = PROBLEMS.map(
+      ({ starterCode, examples, constraints, ...problem }) => problem
+    );
 
     res.status(200).json({
       success: true,

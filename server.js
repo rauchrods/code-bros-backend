@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import codeRoutes from "./routes/codeRoutes.js";
 import problemRoutes from "./routes/problemRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import helmet from "helmet";
 
 dotenv.config();
 
@@ -11,7 +12,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
-// Middleware
+// Security Middleware
+app.use(helmet());
+
+//CORS Middleware
 app.use(
   cors({
     origin: [FRONTEND_URL, "http://localhost:5173"],

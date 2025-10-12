@@ -3,6 +3,7 @@ export const PROBLEMS = [
     id: "two-sum",
     title: "Two Sum",
     functionName: "twoSum",
+    outputType: "return", // <-- Add this field
     description:
       "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
     examples: [
@@ -46,6 +47,7 @@ export const PROBLEMS = [
     id: "longest-substring",
     title: "Longest Substring Without Repeating Characters",
     functionName: "lengthOfLongestSubstring",
+    outputType: "return",
     description:
       "Given a string s, find the length of the longest substring without repeating characters.",
     examples: [
@@ -96,6 +98,7 @@ export const PROBLEMS = [
     id: "median-sorted-arrays",
     title: "Median of Two Sorted Arrays",
     functionName: "findMedianSortedArrays",
+    outputType: "return",
     description:
       "Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.",
     examples: [
@@ -142,6 +145,7 @@ export const PROBLEMS = [
     id: "longest-palindrome",
     title: "Longest Palindromic Substring",
     functionName: "longestPalindrome",
+    outputType: "return",
     description:
       "Given a string s, return the longest palindromic substring in s.",
     examples: [
@@ -190,6 +194,7 @@ export const PROBLEMS = [
     id: "reverse-integer",
     title: "Reverse Integer",
     functionName: "reverse",
+    outputType: "return",
     description:
       "Given a signed 32-bit integer x, return x with its digits reversed.",
     examples: [
@@ -235,6 +240,7 @@ export const PROBLEMS = [
     id: "string-to-integer",
     title: "String to Integer (atoi)",
     functionName: "myAtoi",
+    outputType: "return",
     description:
       "Implement the myAtoi(string s) function, which converts a string to a 32-bit signed integer.",
     examples: [
@@ -293,6 +299,7 @@ export const PROBLEMS = [
     id: "palindrome-number",
     title: "Palindrome Number",
     functionName: "isPalindrome",
+    outputType: "return",
     description: "Given an integer x, return true if x is palindrome integer.",
     examples: [
       {
@@ -343,6 +350,7 @@ export const PROBLEMS = [
     id: "container-water",
     title: "Container With Most Water",
     functionName: "maxArea",
+    outputType: "return",
     description:
       "Given n non-negative integers representing an elevation map, find two lines that together with the x-axis forms a container that holds the most water.",
     examples: [
@@ -389,6 +397,7 @@ export const PROBLEMS = [
     id: "roman-to-integer",
     title: "Roman to Integer",
     functionName: "romanToInt",
+    outputType: "return",
     description: "Given a roman numeral, convert it to an integer.",
     examples: [
       {
@@ -439,6 +448,48 @@ export const PROBLEMS = [
       python: "def roman_to_int(s):\n    # Your code here\n    pass",
       java: "public int romanToInt(String s) {\n    // Your code here\n}",
       cpp: "int romanToInt(string s) {\n    // Your code here\n}",
+    },
+  },
+  {
+    id: "square-star-pattern",
+    title: "Square Star Pattern",
+    functionName: "pattern1",
+    outputType: "print", // <-- This is the key change!
+    description:
+      "Given an integer n, recreate a square pattern of stars where each row contains exactly n stars, and there are exactly n rows.",
+    examples: [
+      {
+        input: { n: 4 },
+        output: "****\n****\n****\n****",
+        explanation:
+          "A 4x4 square of stars with 4 stars in each of the 4 rows.",
+      },
+      {
+        input: { n: 5 },
+        output: "*****\n*****\n*****\n*****\n*****",
+        explanation:
+          "A 5x5 square of stars with 5 stars in each of the 5 rows.",
+      },
+      {
+        input: { n: 3 },
+        output: "***\n***\n***",
+        explanation:
+          "A 3x3 square of stars with 3 stars in each of the 3 rows.",
+      },
+      {
+        input: { n: 1 },
+        output: "*",
+        explanation: "A single star for n=1.",
+      },
+    ],
+    constraints: ["1 ≤ n ≤ 20"],
+    difficulty: "Novice",
+    tags: ["Pattern", "Loops"],
+    starterCode: {
+      javascript: "function pattern1(n) {\n    // Your code here\n}",
+      python: "def pattern1(n):\n    # Your code here\n    pass",
+      java: "public void pattern1(int n) {\n    // Your code here\n}",
+      cpp: "void pattern1(int n) {\n    // Your code here\n}",
     },
   },
 ];

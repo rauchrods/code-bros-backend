@@ -4,7 +4,14 @@ export const getAllProblems = (req, res) => {
   try {
     // Remove starter code from response for security
     const problems = PROBLEMS.map(
-      ({ starterCode, examples, constraints, ...problem }) => problem
+      ({
+        starterCode,
+        examples,
+        constraints,
+        functionName,
+        outputType,
+        ...problem
+      }) => problem
     );
 
     res.status(200).json({

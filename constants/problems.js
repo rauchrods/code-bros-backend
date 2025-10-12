@@ -491,5 +491,6 @@ export const PROBLEMS = [
       java: "public void pattern1(int n) {\n    // Your code here\n}",
       cpp: "void pattern1(int n) {\n    // Your code here\n}",
     },
+    solutionLink: "https://dsaprep.rauchrodrigues.in/docs/Patterns/Pattern%201",
   },
 ];

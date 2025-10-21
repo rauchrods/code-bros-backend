@@ -8,7 +8,7 @@
     "dev": "nodemon --ignore temp/ server.js",
     "migrate": "node scripts/migrate-problems.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docker:setup": "copy .env .env.docker",
+    "docker:setup": "cp .env.docker .env || copy .env.docker .env",
     "docker:build": "docker build -t codebros-backend .",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",

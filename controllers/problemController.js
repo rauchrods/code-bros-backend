@@ -94,8 +94,6 @@ export const getProblemById = async (req, res) => {
     `;
     const examplesResult = await pool.query(examplesQuery, [problem.id]);
 
-    console.log("Examples Result", examplesResult);
-
     const examples = examplesResult.rows.map((row) => ({
       input: row.input_data,
       output: row.expected_output,

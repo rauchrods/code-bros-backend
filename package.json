@@ -7,7 +7,13 @@
     "start": "node server.js",
     "dev": "nodemon --ignore temp/ server.js",
     "migrate": "node scripts/migrate-problems.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker:setup": "copy .env .env.docker",
+    "docker:build": "docker build -t codebros-backend .",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:deploy": "npm run docker:setup && npm run docker:build && npm run docker:up"
   },
   "keywords": [
     "express",

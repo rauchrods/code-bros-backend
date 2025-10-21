@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const TEMP_DIR = path.join(__dirname, "../temp");
-// 5seconds
+// 5 seconds timeout
 const TIMEOUT = 5000;
 
 await fs.mkdir(TEMP_DIR, { recursive: true });
